@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const { v4 } = require('uuid');
 const chalk = require('chalk');
 
-const model = require('../../Models');
+const model = require('../../models');
 const { updateUser } = require('../../controllers/dao/db/user');
 
 
@@ -37,7 +37,6 @@ const seedAdmin = async () => {
     const rolesCreated = await model.Role.bulkCreate([
       { roleName: 'admin', roleId: 'ROL-ADMIN' },
       { roleName: 'elite', roleId: 'ROL-ELITE' },
-      { roleName: 'noob', roleId: 'ROL-NOOB' },
     ]);
 
     if (rolesCreated && adminFromCommandLine !== 'false') {
@@ -87,7 +86,7 @@ const seedAdmin = async () => {
       const superAdminAccount = {
         firstName: 'admin',
         lastName: 'admin',
-        email: process.env.DEV_PLACEMENT_FROM_EMAIL,
+        email: process.env.EXCHANGE_FROM_EMAIL,
         password,
         userId,
         roleId: 'ROL-ADMIN',

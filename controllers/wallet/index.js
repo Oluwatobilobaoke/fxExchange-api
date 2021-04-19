@@ -1,5 +1,7 @@
 const { v4 } = require('uuid');
-const axios = require('axios')
+const axios = require('axios');
+const Webhook = require('coinbase-commerce-node').Webhook;
+const webhookSecret = process.env.EXCHANGE_COIN_BASE_WEBHOOK;
 
 const {
   getUserById,
@@ -18,8 +20,11 @@ const {
 const Role = require('../../Middleware/role');
 const { successResMsg, errorResMsg } = require('../../utils/libs/response');
 const logger = require('../../logger').Logger;
+const { sendEmail } = require('../../utils/libs/send-email');
 
 const baseURL = `${process.env.FIXER_CONVERT_URL}?access_key=${process.env.FIXER_API_KEY}`
+const admin = process.env.EXCHANGE_TO_EMAIL;
+
 
 // eslint-disable-next-line consistent-return
 const getWalletData = async (req, res) => {
@@ -81,10 +86,13 @@ const updateWalletCurrency = async (req, res) => {
 
 const deposit = async (req, res) => {
   try {
+    let coinAmount;
+    let addressSentTo;
     const { userId, walletId, balance, currency } = req.body
     // get user data
-    const userQuery = await getUserById(userId)
-    const user = userQuery.dataValues
+    const userQuery = await getUserById(userId);
+    const user = userQuery.dataValues;
+    const email = user.email;
 
     // wallet update info
     const walletInformation = {
@@ -93,79 +101,92 @@ const deposit = async (req, res) => {
       currency
     }
 
-    const transactionId = v4()
+    const ObjectToBeSent = {
+      name: 'eel exchange',
+      description: 'Demystifying the habit of automating sell',
+      pricing_type: 'fixed_price',
+      local_price: {
+        amount: balance,
+        "currency": "USD"
+      },
+      metadata: {
+        customer_id: userId,
+        customer_name: email,
+      },
+    };
+
+    const apiCallLink = 'https://api.commerce.coinbase.com/charges';
+
+    const options = {
+      headers: {
+      'Content-Type': 'application/json',
+      'X-CC-Api-Key': 'f0f3b3e8-6f62-4c92-b76d-22754cb5b6c5',
+      'X-CC-Version': '2018-03-22',
+      }
+    };
+    
+    const reqSent = await axios.post(apiCallLink, ObjectToBeSent , options);
+   
+    const resPonse = await reqSent;
+
+    const { data } = resPonse;
+
+    const dataInfo = {
+      chargeResponse : data.data
+    } 
+
+    const depositCharge = dataInfo.chargeResponse;
+
+    
+    // const transactionId = v4()
+
+    if (req.body.currency == 'BTC') {
+      coinAmount = depositCharge.pricing.bitcoin.amount;
+      addressSentTo = depositCharge.addresses.bitcoin;
+    } else if (req.body.currency == 'ETH') {
+      coinAmount = depositCharge.pricing.ethereum.amount;
+      addressSentTo = depositCharge.addresses.ethereum;
+    }
 
     // transaction info
     const transactionInformation = {
       userId,
-      transactionId,
+      transactionId: depositCharge.id,
       walletId,
       currency,
       type: 'deposit',
-      amount: balance
+      amount: balance,
+      coinAmount,
+      addressSentTo,
+      txnCode: depositCharge.code,
     }
 
-    const dataInfo = { message: 'Wallet funding initiated, awaiting approval' }
+    const transaction = transactionInformation.dataValues;
 
-    // If user role === Elite
-    // create new wallet for user and make transaction 
-    if (req.user.roleId === Role.Elite) {
-      const transactionId = v4();
 
-      const walletsQuery = await getWallets(userId)
-      const wallets = walletsQuery.map(wallet => wallet.dataValues)
+    await Promise.all([
+      sendEmail({
+        email,
+        subject: 'Deposit Notification',
+        message: await registerEmailContent(email, transaction.amount, transaction.coinAmount, transaction.addressSentTo, coinAmount, depositCharge.expires_at),
+      }),
+      sendEmail({
+        admin,
+        subject: ' Deposit Notification',
+        message: `${email} just initiated a deposit of $${transaction.amount} worth of ${currency}`,
+      }),
+    ])
 
-      const walletToWithdraw = wallets.filter(wallet => wallet.currency === currency)
-
-      if (walletToWithdraw.length !== 0) {
-        if (walletToWithdraw[0].currency === currency) {
-          await createTransaction({...transactionInformation, transactionId, walletId, status: 'approved' })
-          // Update Wallet with Amount
-          await updateByWalletId(walletToWithdraw[0].walletId, { balance: balance + walletToWithdraw[0].balance })
-    
-          return successResMsg(res, 200, { message: `Transaction has been approved and wallet has been credited`})
-        }
-      }
-      
-      if (user.currency !== currency) {
-        // Wallet Data   
-        const walletId = v4();
-
-        const newWalletInformation = {
-            userId,
-            walletId,
-            currency,
-            balance
-        }
-
-        await createUserWallet(newWalletInformation);
-        await createTransaction({...transactionInformation, transactionId, walletId, status: 'approved' })
-        
-        return successResMsg(res, 200, { message: 'Transaction successful. Wallet has been credited'})
-      }
+    const CoinbaseDataObj = {
+      "message": "Deposit initiated successfully, awaiting confirmation/approval",
+      transaction,
+      expiresIn: depositCharge.expires_at,
     }
 
-    // compare currency n update wallet balance, convert to main currency if different currency is supplied
-
-    if (user.currency !== currency) {
-      // Convert currency using Fixer API
-      const { data } = await axios.get(`${baseURL}&from=${currency}&to=${user.currency}&amount=${balance}`)
-
-      if(!data.result) {
-        return errorResMsg(res, 400, { message: 'An error occured while converting currency'})
-      }
-
-      const transactionData = { ...transactionInformation, amount: data.result }
-
-      //  create transaction data
-      await createTransaction(transactionData)
-
-      return successResMsg(res, 200, dataInfo)
-    }
 
     // Create Transaction -- To be Approved 
     await createTransaction(transactionInformation)
-    return successResMsg(res, 200, dataInfo)
+    return successResMsg(res, 200, CoinbaseDataObj)
 
   } catch (error) {
     logger.error(error);
@@ -242,10 +263,37 @@ const withdrawal = async (req, res) => {
   }
 }
 
+const createWallet = async (req, res) => {
+  try {
+
+    const { userId, currency } = req.body;
+    
+    // Create a new wallet
+    const walletId = v4();
+  
+    const walletInformation = {
+      userId,
+      walletId,
+      currency
+    }
+
+    await createUserWallet(walletInformation);
+
+    const dataInfo = { message: 'Wallet creation successful!.' };
+
+    successResMsg(res, 201, dataInfo);
+    
+  } catch (error) {
+    logger.error(error);
+    return errorResMsg(res, 500, 'it is us, not you. Please try again');
+  }
+}
+
 module.exports = {
   deposit,
   withdrawal,
   getWalletData,
   getUserWallets,
-  updateWalletCurrency
+  updateWalletCurrency,
+  createWallet,
 }

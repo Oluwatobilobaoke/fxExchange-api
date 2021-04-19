@@ -2,7 +2,7 @@ const jwtExpress = require('express-jwt');
 const { getUserById } = require('../controllers/dao/db/user');
 const { errorResMsg } = require('../utils/libs/response');
 
-const secret = process.env.DEV_PLACEMENT_JWT_SECRET;
+const secret = process.env.EXCHANGE_JWT_SECRET;
 
 // Check if your are authorized for the route
 const authorize = (roleIds = []) => {

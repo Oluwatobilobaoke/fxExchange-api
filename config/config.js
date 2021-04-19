@@ -15,7 +15,7 @@ module.exports = {
     database: process.env.EXCHANGE_DB_NAME,
     host: process.env.EXCHANGE_DB_HOST,
     dialect: process.env.EXCHANGE_DB_DIALECT,
-    logging: false,
+    logging: true,
   },
   production: {
     username: process.env.EXCHANGE_DB_USER,

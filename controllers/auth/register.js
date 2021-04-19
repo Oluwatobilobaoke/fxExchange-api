@@ -27,7 +27,6 @@ const register = async (req, res) => {
     const {
       email,
       password,
-      currency
     } = req.body;
   
     const userExists = await getUserByEmail(email);
@@ -43,7 +42,7 @@ const register = async (req, res) => {
     const walletInformation = {
         userId,
         walletId,
-        currency
+        currency: BTC,
     }
   
     const data = {
@@ -57,10 +56,8 @@ const register = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
-      roleId: 'ROL-NOOB',
+      roleId: 'ROL-ELITE',
       userId,
-      currency,
-      walletId
     };
   
     await createUser(userInformation);

@@ -1,5 +1,9 @@
 const { v4 } = require('uuid');
-const axios = require('axios')
+const axios = require('axios');
+const Webhook = require('coinbase-commerce-node').Webhook;
+const webhookSecret = process.env.EXCHANGE_COIN_BASE_WEBHOOK;
+const admin = process.env.EXCHANGE_TO_EMAIL;
+
 
 const {
   getUserById,
@@ -16,6 +20,28 @@ const {
 const { successResMsg, errorResMsg } = require('../../utils/libs/response');
 const logger = require('../../logger').Logger;
 
+/**
+ * 
+ * @param {*} req Codes for transaction
+ * 
+ * @param {*} res 
+ */
+
+ const successStatus = 'Confirmed';
+ const pendingStatus = 'Pending';
+ const failedStatus = 'Failed';
+ const delayedStatus = 'Delayed';
+ const resolvedStatus = 'Resolved & Successfull';
+ const createdStatus = 'Created & Processing';
+
+const sendAdminMail = async (admin, txnCode, amount) => {
+    await sendEmail({
+        admin, // TODO improve to send mail to to user also when transactions has been confirmed
+        subject: 'Deposit Confirmation',
+        message: `${txnCode} deposit of $${transaction.amount} has been confirmed`,
+      })
+}
+
 const approveDeposit = async (req, res) => {
     try {
         const { transactionId } = req.params
@@ -28,7 +54,7 @@ const approveDeposit = async (req, res) => {
         const walletQuery = await getUserWalletById(walletId)
         const { balance } = walletQuery.dataValues
 
-        if (status === 'approved' || status ===  'disapproved') {
+        if (status === 'Failed' || status ===  'Confirmed') {
             return successResMsg(res, 200, { message: 'This transaction have already been approved or rejected' })
         }
 
@@ -44,6 +70,102 @@ const approveDeposit = async (req, res) => {
         return errorResMsg(res, 500, 'it is us, not you. Please try again');
     }
 }
+
+module.exports.depositListener = async (req, res) => {
+    try {
+  
+      const {event} = req.body;
+  
+      const eventStringified = JSON.stringify(req.body);
+  
+    //   console.log('event received stringify', eventStringified);
+  
+  
+      try {
+        
+        const verified = Webhook.verifyEventBody(
+          eventStringified,
+        req.headers['x-cc-webhook-signature'],
+        webhookSecret
+        );
+
+        console.log('Incoming Event being sent is Successfully Verified');
+  
+        
+  
+        if (verified) {
+              const CoinbaseDataObj= {
+                type: event.type,
+                code: event.data.code,
+                timelineStatus: event.data.timeline,
+                id: event.id,
+                dateConfirmed: event.data.confirmed_at,
+                amount: event.data.pricing.local.amount,
+              };
+          
+              // console.log('passed Date', CoinbaseDataObj.dateConfirmed);
+  
+              const tranSanctionCode = CoinbaseDataObj.code;
+  
+              const checkTransactionExist = await getDepositByCoinbaseCode(tranSanctionCode);
+  
+              if (!checkTransactionExist) return errorResMsg(res, 403, 'Transaction does not exist in our records');
+
+              const transaction = checkTransactionExist.dataValues;
+          
+              async function updateStatusFromCharge(CoinbaseDataObj) {
+                
+                const data = CoinbaseDataObj;
+                             
+                switch (data.type) {
+                  case 'charge:confirmed':
+                    console.log('confirmed', data.type);
+                    console.log('confirmedAt', data.dateConfirmed); // TODO Remove all unnecessary console.log here
+                    await updateDepositStatus(data.code, successStatus);
+                    console.log('Status has been confirmed');
+                    await sendAdminMail(admin, transaction.txnCode, transaction.amount);
+                    break;
+                  case 'charge:pending':
+                    await updateDepositStatus(data.code, pendingStatus);
+                    console.log('Status is pending');
+                    break;
+                  case 'charge:created':
+                    await updateDepositStatus(data.code, createdStatus);
+                    break;
+                  case 'charge:failed':
+                    await updateDepositStatus(data.code, failedStatus);
+                    console.log('Status has failed');
+                    break;
+                  case 'charge:delayed':
+                    await updateDepositStatus(data.code, delayedStatus);
+                    console.log('Status is been delayed');
+                    break;
+                  case 'charge:resolved':
+                    await updateDepositStatus(data.code, resolvedStatus);
+                    console.log('Status has been resolved');
+                    break;
+                  default:
+                    break;
+                }
+              };
+          
+              updateStatusFromCharge(CoinbaseDataObj);
+              console.log('Passed WebHook Verification');
+            return successResMsg(res, 200, 'Deposit Status Updated Successfully');
+  
+          } else {
+             return errorResMsg(res, 404, 'Alaye hahaha you failed hacker!!, SUCK my dick');
+            }
+            
+      } catch (error) {
+        console.log('Webhook Error occurred', error.message);
+      }
+    
+    } catch (error) {
+      logger.error(error);
+        return errorResMsg(res, 500, 'it is us, not you. Please try again');
+    }
+  };
 
 const rejectTransaction = async (req, res) => {
     try {

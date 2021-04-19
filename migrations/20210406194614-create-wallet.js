@@ -18,9 +18,9 @@ module.exports = {
         allowNull: false,
       },
       balance: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(23, 2),
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: 0.00,
       },
       currency: {
         type: DataTypes.STRING,

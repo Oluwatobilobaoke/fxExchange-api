@@ -32,15 +32,26 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       amount: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(23, 2),
         allowNull: false,
-        defaultValue: 0,
+      },
+      coinAmount: {
+        type: DataTypes.DECIMAL(23, 2),
+        allowNull: false
       },
       status: {
-        type: DataTypes.ENUM,
-        values: ['approved', 'processing', 'disapproved'],
+        type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'processing',
+      },
+      txnCode: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: '0',
+      },
+      addressSentTo: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
     }
   )
