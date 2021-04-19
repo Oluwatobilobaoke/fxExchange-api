@@ -32,14 +32,6 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
-      walletId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      currency: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
       roleId: {
         type: DataTypes.STRING,
       },

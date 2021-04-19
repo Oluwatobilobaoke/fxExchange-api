@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-  deposit, withdrawal, getWalletData, getUserWallets, updateWalletCurrency
+  deposit, withdrawal, getWalletData, getUserWallets, updateWalletCurrency, createWallet,
 } = require('../../controllers/wallet');
 
 const { authorize } = require('../../Middleware/index');
@@ -38,5 +38,11 @@ router.post(
     authorize([Role.Elite, Role.Noob]),
     withdrawal
 );
+
+router.post(
+    '/create',
+    authorize(Role.Elite),
+    createWallet
+)
 
 module.exports = { walletRouter: router };

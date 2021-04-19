@@ -13,4 +13,10 @@ module.exports = {
     deleteTransactionById: async (userId) => {
       return model.Transaction.destroy({ where: { userId } });
     },
+    getDepositByCoinbaseCode: async (txnCode) => {
+      return model.Deposit.findOne({ where: { txnCode } });
+    },
+    updateDepositStatus: async (txnCode, status) => {
+      return model.Transaction.update({ status: status }, { where: { txnCode } });
+    },
 }

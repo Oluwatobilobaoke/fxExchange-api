@@ -27,6 +27,18 @@ class WalletValidation {
       );
       validator(format, req.body, res, next);
     }
+    static validateWalletCreation(req, res, next) {
+      const format = Joi.object().keys(
+        {
+            userId: Format.text,
+          walletId: Format.text,
+          currency: Format.text,
+          amount: Format.number,
+        },
+        {}
+      );
+      validator(format, req.body, res, next);
+    }
 }
 
 module.exports.WalletValidation = WalletValidation;

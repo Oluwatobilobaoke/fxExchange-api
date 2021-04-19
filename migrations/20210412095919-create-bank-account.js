@@ -1,55 +1,41 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Transactions', {
+    await queryInterface.createTable('BankAccounts', {
       id: {
         allowNull: false,
-        unique: true,
-        primaryKey: true,
         autoIncrement: true,
-        type: DataTypes.INTEGER,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      bankName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      accountNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      accountName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      accountType: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       userId: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      transactionId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      walletId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      currency: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      type: {
-        type: DataTypes.ENUM,
-        values: ['deposit', 'withdrawal'],
-        allowNull: false,
-      },
-      amount: {
-        type: DataTypes.DECIMAL(23, 2),
-        allowNull: false,
-      },
-      coinAmount: {
-        type: DataTypes.DECIMAL(23, 2),
-        allowNull: false
-      },
       status: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 'processing',
+        defaultValue: false,
       },
-      txnCode: {
+      bankAccountId: {
         type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: '0',
-      },
-      addressSentTo: {
-        type: DataTypes.STRING,
+        primaryKey: true,
         allowNull: false,
       },
       createdAt: {
@@ -63,6 +49,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Transactions');
+    await queryInterface.dropTable('BankAccounts');
   }
 };
