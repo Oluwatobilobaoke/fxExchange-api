@@ -7,49 +7,49 @@ module.exports = {
         unique: true,
         primaryKey: true,
         autoIncrement: true,
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
       },
       userId: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       transactionId: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       walletId: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       currency: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       type: {
-        type: DataTypes.ENUM,
+        type: Sequelize.ENUM,
         values: ['deposit', 'withdrawal'],
         allowNull: false,
       },
       amount: {
-        type: DataTypes.DECIMAL(23, 2),
+        type: Sequelize.DECIMAL(23, 2),
         allowNull: false,
       },
       coinAmount: {
-        type: DataTypes.DECIMAL(23, 2),
+        type: Sequelize.DECIMAL(23, 2),
         allowNull: false
       },
       status: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
         defaultValue: 'processing',
       },
       txnCode: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
         defaultValue: '0',
       },
       addressSentTo: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       createdAt: {

@@ -2,6 +2,7 @@ const { v4 } = require('uuid');
 const axios = require('axios');
 const Webhook = require('coinbase-commerce-node').Webhook;
 const webhookSecret = process.env.EXCHANGE_COIN_BASE_WEBHOOK;
+const adminMail = process.env.EXCHANGE_TO_EMAIL;
 
 const {
   getUserById,
@@ -23,7 +24,7 @@ const logger = require('../../logger').Logger;
 const { sendEmail } = require('../../utils/libs/send-email');
 
 const baseURL = `${process.env.FIXER_CONVERT_URL}?access_key=${process.env.FIXER_API_KEY}`
-const admin = process.env.EXCHANGE_TO_EMAIL;
+
 
 
 // eslint-disable-next-line consistent-return
@@ -51,7 +52,7 @@ const getUserWallets = async (req, res) => {
     const walletQuery = await getWallets(userId)
     const walletData = await walletQuery
 
-    if (!walletData) {
+    if (walletData.length == 0) {
       return errorResMsg(res, 404, { message: 'Wallet Information Not Found' })
     }
 
@@ -101,6 +102,7 @@ const deposit = async (req, res) => {
       currency
     }
 
+
     const ObjectToBeSent = {
       name: 'eel exchange',
       description: 'Demystifying the habit of automating sell',
@@ -137,6 +139,8 @@ const deposit = async (req, res) => {
 
     const depositCharge = dataInfo.chargeResponse;
 
+    // console.log(JSON.stringify(depositCharge)); TODO remove console log here
+
     
     // const transactionId = v4()
 
@@ -161,21 +165,28 @@ const deposit = async (req, res) => {
       txnCode: depositCharge.code,
     }
 
-    const transaction = transactionInformation.dataValues;
+    const transactionToBeSaved = await createTransaction(transactionInformation)
 
+    const transaction = transactionToBeSaved.dataValues;
+     console.log({transaction}); //TODO remove console log here
+
+     console.log(email, adminMail);
 
     await Promise.all([
       sendEmail({
         email,
         subject: 'Deposit Notification',
-        message: await registerEmailContent(email, transaction.amount, transaction.coinAmount, transaction.addressSentTo, coinAmount, depositCharge.expires_at),
+       // message: await registerEmailContent(email, transaction.amount, transaction.coinAmount, transaction.addressSentTo, coinAmount, depositCharge.expires_at),
+        message: ` Hello ${email}, You initiated a sale of $${transaction.amount}, you are to pay ${transaction.coinAmount} ${currency} into the given Address ${transaction.addressSentTo}, \n The Sale expires ${depositCharge.expires_at} `,
       }),
       sendEmail({
-        admin,
+        email: adminMail,
         subject: ' Deposit Notification',
-        message: `${email} just initiated a deposit of $${transaction.amount} worth of ${currency}`,
+        message: `${email} just initiated a deposit of $${transaction.amount} worth of ${transaction.coinAmount} ${currency}`,
       }),
     ])
+
+    
 
     const CoinbaseDataObj = {
       "message": "Deposit initiated successfully, awaiting confirmation/approval",
@@ -267,6 +278,8 @@ const createWallet = async (req, res) => {
   try {
 
     const { userId, currency } = req.body;
+
+    if (req.body.currency != "ETH") return errorResMsg(res, 500, 'incorrect currency');
     
     // Create a new wallet
     const walletId = v4();

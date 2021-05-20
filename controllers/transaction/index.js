@@ -36,9 +36,9 @@ const logger = require('../../logger').Logger;
 
 const sendAdminMail = async (admin, txnCode, amount) => {
     await sendEmail({
-        admin, // TODO improve to send mail to to user also when transactions has been confirmed
+        email: admin, // TODO improve to send mail to to user also when transactions has been confirmed
         subject: 'Deposit Confirmation',
-        message: `${txnCode} deposit of $${transaction.amount} has been confirmed`,
+        message: `${txnCode} deposit of $${amount} has been confirmed`,
       })
 }
 
@@ -211,8 +211,28 @@ const approveWithdrawal = async (req, res) => {
     }
 }
 
+const getTransaction = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const transactionQuery = await getUserTransactionById(transactionId)
+    
+    const transaction = await transactionQuery.dataValues;
+    if (!deposit) {
+      return errorResMsg(res, 400, 'transaction does not exist')
+    }
+  
+    return successResMsg(res, 200, transaction);
+    
+  } catch (error) {
+    logger.error(error);
+  	return errorResMsg(res, 500, 'it is us, not you. Please try again');
+  }
+};
+
+
 module.exports = {
     approveDeposit,
     approveWithdrawal,
     rejectTransaction,
+    getTransaction
 }

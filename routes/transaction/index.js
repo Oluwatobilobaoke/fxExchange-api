@@ -1,13 +1,20 @@
 const express = require('express');
 
 const {
-  approveDeposit, approveWithdrawal, rejectTransaction
+  approveDeposit, approveWithdrawal, rejectTransaction,
+  getTransaction,
 } = require('../../controllers/transaction');
 
 const { authorize } = require('../../Middleware/index');
 const Role = require('../../Middleware/role');
 
 const router = express.Router();
+
+router.get(
+  '/:transactionId',
+  authorize(),
+  getTransaction
+);
 
 router.patch(
     '/deposit/approve/:transactionId',

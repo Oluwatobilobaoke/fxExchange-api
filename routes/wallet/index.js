@@ -11,11 +11,13 @@ const router = express.Router();
 
 router.get(
     '/data/:walletId',
+    authorize(),
     getWalletData
 );
 
 router.get(
     '/:userId',
+    authorize(),
     getUserWallets
 );
 

@@ -7,23 +7,23 @@ module.exports = {
         unique: true,
         primaryKey: true,
         autoIncrement: true,
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
       },
       userId: {
-          type: DataTypes.STRING,
+          type: Sequelize.STRING,
           allowNull: false,
         },
       walletId: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       balance: {
-        type: DataTypes.DECIMAL(23, 2),
+        type: Sequelize.DECIMAL(23, 2),
         allowNull: false,
         defaultValue: 0.00,
       },
       currency: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       createdAt: {

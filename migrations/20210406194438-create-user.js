@@ -6,37 +6,37 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         unique: true,
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
       },
       status: {
-        type: DataTypes.ENUM,
+        type: Sequelize.ENUM,
         values: ['0', '1'],
         allowNull: false,
         defaultValue: '0',
       },
       email: {
-        type: DataTypes.STRING(250),
+        type: Sequelize.STRING(250),
         allowNull: false,
         unique: true,
       },
       password: {
-        type: DataTypes.STRING(250),
+        type: Sequelize.STRING(250),
         allowNull: false,
       },
       emailVerifiedAt: {
-        type: DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       userId: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false,
       },
       roleId: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
       },
-      resetPasswordToken: DataTypes.STRING,
-      resetPasswordExpire: DataTypes.BIGINT,
+      resetPasswordToken: Sequelize.STRING,
+      resetPasswordExpire: Sequelize.BIGINT,
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

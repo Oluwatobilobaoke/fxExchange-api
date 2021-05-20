@@ -6,14 +6,14 @@ module.exports = {
         allowNull: false,
         unique: true,
         autoIncrement: true,
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
       },
       roleName: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       roleId: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false,
       },

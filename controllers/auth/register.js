@@ -27,6 +27,7 @@ const register = async (req, res) => {
     const {
       email,
       password,
+      phoneNumber,
     } = req.body;
   
     const userExists = await getUserByEmail(email);
@@ -42,7 +43,7 @@ const register = async (req, res) => {
     const walletInformation = {
         userId,
         walletId,
-        currency: BTC,
+        currency: "BTC",
     }
   
     const data = {
@@ -52,9 +53,10 @@ const register = async (req, res) => {
   
     // User Data
     const userInformation = {
-      firstName,
-      lastName,
+      // firstName,
+      // lastName,
       email,
+      phoneNumber,
       password: hashedPassword,
       roleId: 'ROL-ELITE',
       userId,

@@ -118,12 +118,12 @@ exports.registerEmailContent = async (firstName, url) => {
                   <td>
                     <div class="mail-btm">
                       <div class="inner">
-                          <div class="company-name">Hybee DevPlacement Test</div>
+                          <div class="company-name">Eeel Exchange</div>
                           <hr>
                           <div class="unsubscribe">
                               <span>email: </span>
                               <span>
-                                <a href="mailto:adefemi101@gmail.com" style="color:white">adefemi101@gmail.com</a>
+                                <a href="mailto:admin@gmail.com" style="color:white">adefemi101@gmail.com</a>
                               </span>
                             <p style="color: white">This email is an important notice of a status change that may affect your account. Please read the information carefully as actions, once taken, may be permanent</p>
                             
