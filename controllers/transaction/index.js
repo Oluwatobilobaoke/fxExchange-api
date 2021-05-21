@@ -14,8 +14,15 @@ const {
   updateByWalletId
 } = require('../dao/db/wallet');
 const {
-    getUserTransactionById, updateTransaction,
+    getUserTransactionById, 
+    updateTransaction,
+    getAllTransactionsFromSingleUser,
 } = require('../dao/db/transaction');
+
+const {
+  getPagination,
+  getPagingData,
+} = require('../../utils/libs/pagination');
 
 const { successResMsg, errorResMsg } = require('../../utils/libs/response');
 const logger = require('../../logger').Logger;
@@ -217,7 +224,7 @@ const getTransaction = async (req, res) => {
     const transactionQuery = await getUserTransactionById(transactionId)
     
     const transaction = await transactionQuery.dataValues;
-    if (!deposit) {
+    if (!transaction) {
       return errorResMsg(res, 400, 'transaction does not exist')
     }
   
@@ -229,10 +236,30 @@ const getTransaction = async (req, res) => {
   }
 };
 
+const getAllTransactions = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const { page, size } = req.query;
+    const { limit, offset } = getPagination(page, size);
+    const allTransactions = await getAllTransactionsFromSingleUser(userId, limit, offset);
+    const data = getPagingData(allTransactions.count, page, limit);
+     const dataInfo = {
+      transactions: allTransactions,
+      transaction: data,
+      };
+
+  return successResMsg(res, 200, dataInfo);
+  } catch (error) {
+    logger.error(error);
+  	return errorResMsg(res, 500, 'it is us, not you. Please try again');
+  }
+}
 
 module.exports = {
     approveDeposit,
     approveWithdrawal,
     rejectTransaction,
-    getTransaction
+    getTransaction,
+    getAllTransactions
 }

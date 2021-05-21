@@ -19,4 +19,17 @@ module.exports = {
     updateDepositStatus: async (txnCode, status) => {
       return model.Transaction.update({ status: status }, { where: { txnCode } });
     },
+    getAllTransactionsFromSingleUser: async (userId, limit, offset) => {
+      return model.Transaction.findAndCountAll({
+        where: {
+           userId 
+          },
+          order: [
+            ['updatedAt', 'DESC'],
+        ],
+          limit,
+          offset,
+        });
+    },
+    
 }

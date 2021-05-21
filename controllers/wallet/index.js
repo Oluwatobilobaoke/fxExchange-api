@@ -87,7 +87,7 @@ const updateWalletCurrency = async (req, res) => {
 
 const deposit = async (req, res) => {
   try {
-    let coinAmount;
+    let amountInCoin;
     let addressSentTo;
     const { userId, walletId, balance, currency } = req.body
     // get user data
@@ -145,10 +145,10 @@ const deposit = async (req, res) => {
     // const transactionId = v4()
 
     if (req.body.currency == 'BTC') {
-      coinAmount = depositCharge.pricing.bitcoin.amount;
+      amountInCoin = depositCharge.pricing.bitcoin.amount;
       addressSentTo = depositCharge.addresses.bitcoin;
     } else if (req.body.currency == 'ETH') {
-      coinAmount = depositCharge.pricing.ethereum.amount;
+      amountInCoin = depositCharge.pricing.ethereum.amount;
       addressSentTo = depositCharge.addresses.ethereum;
     }
 
@@ -160,7 +160,7 @@ const deposit = async (req, res) => {
       currency,
       type: 'deposit',
       amount: balance,
-      coinAmount,
+      coinAmount: amountInCoin,
       addressSentTo,
       txnCode: depositCharge.code,
     }
@@ -194,9 +194,6 @@ const deposit = async (req, res) => {
       expiresIn: depositCharge.expires_at,
     }
 
-
-    // Create Transaction -- To be Approved 
-    await createTransaction(transactionInformation)
     return successResMsg(res, 200, CoinbaseDataObj)
 
   } catch (error) {

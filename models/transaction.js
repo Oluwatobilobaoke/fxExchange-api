@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       coinAmount: {
-        type: DataTypes.DECIMAL(23, 2),
+        type: DataTypes.DECIMAL(23, 8),
         allowNull: false
       },
       status: {
