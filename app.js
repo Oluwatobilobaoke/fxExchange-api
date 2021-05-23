@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const logger = require('morgan');
 const dotenv = require('dotenv');
+const sequelize = require('sequelize');
 
 dotenv.config();
 
@@ -25,6 +26,19 @@ app.use(cors());
 db.sequelize.sync().then(async () => {
     await seedAdmin();
   });
+
+// connectDB = async () => {
+//   try {
+//     await sequelize.authenticate();
+//     console.log('Connection has been established successfully.');
+//     await seedAdmin();
+//     console.log('Connection has been established successfully.2');
+//   } catch (error) {
+//     console.error('Unable to connect to the database:', error);
+//   }
+// }
+
+//connectDB();
 
 // ROUTES
 app.use('/v1/auth', authRouter);

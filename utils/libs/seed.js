@@ -59,7 +59,7 @@ const seedAdmin = async () => {
         },
         {
           name: 'phoneNumber',
-          message: 'phone Number (default: email@example.com)',
+          message: 'phone Number (default: 08182205275)',
           default: '08182205275',
         },
       ])
