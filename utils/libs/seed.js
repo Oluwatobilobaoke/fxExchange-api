@@ -57,6 +57,11 @@ const seedAdmin = async () => {
           message: 'email (default: email@example.com)',
           default: 'email@example.com',
         },
+        {
+          name: 'phoneNumber',
+          message: 'phone Number (default: email@example.com)',
+          default: '08182205275',
+        },
       ])
       .then(async (answers) => {
         // hash password
@@ -70,6 +75,7 @@ const seedAdmin = async () => {
           lastName: answers.lastName,
           email: answers.email,
           password: answers.password,
+          phoneNumber: answers.phoneNumber,
           userId,
           roleId: 'ROL-ADMIN',
           status: '1',
@@ -87,6 +93,7 @@ const seedAdmin = async () => {
         firstName: 'admin',
         lastName: 'admin',
         email: process.env.EXCHANGE_FROM_EMAIL,
+        phoneNumber: '08182205275',
         password,
         userId,
         roleId: 'ROL-ADMIN',
