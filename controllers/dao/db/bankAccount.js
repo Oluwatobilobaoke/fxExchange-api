@@ -14,7 +14,7 @@ module.exports = {
       return model.BankAccount.destroy({ where: { userId } });
     },
     getUserBankAccounts: async (userId) => {
-      return model.Wallet.findAll({ where: { userId }, attributes: ['userId', 'bankAccountId', 'bankName', 'accountNumber', 'accountName', 'status'] });
+      return model.BankAccount.findAll({ where: { userId }, attributes: ['userId', 'bankAccountId', 'bankName', 'accountNumber', 'accountName', 'status'] });
     },
     getBankAccountByUserId: async (userId) => {
       return model.BankAccount.findOne({ where: { userId } });

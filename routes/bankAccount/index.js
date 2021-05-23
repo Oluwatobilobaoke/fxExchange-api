@@ -3,8 +3,9 @@ const {
     getBankAccountData,
     getBankAccounts,
     setDefaultAccount,
-    createBankAccount,
-} = require('../../routes/bankAccount');
+    createUserBankAccount,
+    deleteBankAccount
+} = require('../../controllers/bankAccount');
 
 const { authorize } = require('../../Middleware/index');
 const Role = require('../../Middleware/role');
@@ -12,27 +13,43 @@ const { BankAccountValidation } = require('../../utils/validators/bankAccount/in
 
 const router = express.Router();
 
-router.get(
-    '/data/:bankAccountId',
-    getBankAccountData,
-    authorize()
-);
-
-router.get(
-    '/:userId',
-    getBankAccounts,
-    authorize()
-);
-
-router.put(
-    '/update/default/:bankAccountId',
-    setDefaultAccount,
-    authorize()
-);
+const getId = (req, res, next) => {
+  const { userId } = req.user;
+  req.params.userId = userId;
+  next();
+};
 
 router.post(
-    '/create',
-    createBankAccount,
-    BankAccountValidation.validateBankAccountCreation,
-    authorize(),
+  '/create',
+  BankAccountValidation.validateBankAccountCreation,
+  authorize(),
+  createUserBankAccount,
 );
+
+router.get(
+    '/data/:bankAccountId',
+    authorize(),
+    getBankAccountData,
+);
+
+router.get(
+    '/',
+    authorize(),
+    getId,
+    getBankAccounts,
+);
+
+router.patch(
+    '/update/default/:bankAccountId',
+    authorize(),
+    setDefaultAccount,
+);
+
+router.delete(
+  '/delete/:bankAccountId',
+  authorize(),
+  deleteBankAccount
+);
+
+
+module.exports = { bankRouter: router };

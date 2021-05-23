@@ -9,6 +9,12 @@ const { WalletValidation } = require('../../utils/validators/wallet/index');
 
 const router = express.Router();
 
+const getId = (req, res, next) => {
+  const { userId } = req.user;
+  req.params.userId = userId;
+  next();
+};
+
 router.get(
     '/data/:walletId',
     authorize(),
@@ -16,8 +22,9 @@ router.get(
 );
 
 router.get(
-    '/:userId',
+    '/',
     authorize(),
+    getId,
     getUserWallets
 );
 

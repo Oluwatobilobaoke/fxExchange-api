@@ -28,6 +28,8 @@ const register = async (req, res) => {
       email,
       password,
       phoneNumber,
+      firstName,
+      lastName,
     } = req.body;
   
     const userExists = await getUserByEmail(email);
@@ -53,8 +55,8 @@ const register = async (req, res) => {
   
     // User Data
     const userInformation = {
-      // firstName,
-      // lastName,
+      firstName,
+      lastName,
       email,
       phoneNumber,
       password: hashedPassword,

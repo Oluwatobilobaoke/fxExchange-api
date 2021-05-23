@@ -8,6 +8,8 @@ class UserValidation {
   static validateUser(req, res, next) {
     const format = Joi.object().keys(
       {
+        firstName: Format.text,
+        lastName: Format.text,
         email: Format.email,
         password: Format.password,
         phoneNumber: Format.phoneNo,

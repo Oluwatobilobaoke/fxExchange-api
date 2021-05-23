@@ -3,11 +3,17 @@ const { v4 } = require('uuid');
 const { 
 	getUserBankAccountById,
 	getUserBankAccounts,
+  createBankAccount,
+  updateBankAccount,
+  deleteBankAccountById,
 } = require('../dao/db/bankAccount');
 
 
 const { successResMsg, errorResMsg } = require('../../utils/libs/response');
 const logger = require('../../logger').Logger;
+
+
+// const bankAccountAttribute = ['userId', 'bankAccountId', 'bankName', 'accountNumber', 'accountName', 'status'];
 
 const getBankAccountData = async (req, res) => {
   try {
@@ -47,6 +53,7 @@ const getBankAccounts = async (req, res) => {
 }
 
 const setDefaultAccount = async (req, res) => {
+
 	try {
 		const { bankAccountId } = req.body;
 
@@ -68,7 +75,29 @@ const setDefaultAccount = async (req, res) => {
   }
 }
 
-const createBankAccount = async (req, res) => {
+const deleteBankAccount = async (req, res) => {
+  try {
+    const { bankAccountId } = req.params;
+
+    const bankAccount = await getUserBankAccountById(bankAccountId);
+
+    if (!bankAccount) {
+      return errorResMsg(res, 400, 'Bank Account does not exist');
+    }
+
+    await deleteBankAccountById(bankAccountId);
+
+    const dataInfo = { message: 'Bank Account Information Deleted Successfully' }
+    return successResMsg(res, 200, dataInfo)
+
+  } catch (error) {
+    logger.error(error);
+    return errorResMsg(res, 500, 'it is us, not you. Please try again');
+  }
+}
+
+const createUserBankAccount = async (req, res) => {
+
 	try {
 		const { bankName, accountNumber, accountName, accountType, userId } = req.body;
 
@@ -99,5 +128,6 @@ module.exports = {
 	getBankAccountData,
 	getBankAccounts,
 	setDefaultAccount,
-	createBankAccount	
+	createUserBankAccount,
+  deleteBankAccount,
 }
