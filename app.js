@@ -13,7 +13,7 @@ const { walletRouter } = require('./routes/wallet/index');
 const { transactionRouter } = require('./routes/transaction/index');
 const { bankRouter } = require('./routes/bankAccount/index')
 const { rateRouter } = require('./routes/rate/index')
-const { seedAdmin } = require('./Utils/libs/seed');
+const { seedAdmin } = require('./utils/libs/seed');
 const { errorHandler } = require('./Middleware/error-handler');
 
 const app = express();
