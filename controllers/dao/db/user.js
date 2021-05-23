@@ -1,5 +1,5 @@
 const model = require('../../../models/index');
-const Role = require('../../../Middleware/Role');
+const Role = require('../../../Middleware/role');
 module.exports = {
     createUser: async (data) => {
       return model.User.create(data);
