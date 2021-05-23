@@ -4,7 +4,7 @@ const {
     updateUserRoleToNoob,
     updateUserData
   } = require('../dao/db/user');
-  const Role = require('../../Middleware/Role')
+  const Role = require('../../Middleware/role')
   const { successResMsg, errorResMsg } = require('../../utils/libs/response');
   const logger = require('../../logger').Logger;
   
