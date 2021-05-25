@@ -11,6 +11,13 @@ const logger = require('../../logger').Logger;
 const returnUser = async (req, res, email, password, user) => {
   try {
 
+    if (user.status === '0') {
+        return errorResMsg(
+          res,
+          401,
+          'User is not verified or Blocked, Check your email or Contact the Administrator'
+        );
+    }
     // Decrypting User Password
     const valid = comparePassword(password, user.password);
     
