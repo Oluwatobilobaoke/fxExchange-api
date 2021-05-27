@@ -32,13 +32,13 @@ module.exports = {
   array: Joi.array().required(),
   boolean: Joi.boolean().required(),
   json: Joi.object().required(),
-  password: Joi.string().trim().required().min(1).messages({
+  password: Joi.string().trim().required().min(8).messages({
     'string.empty': 'Password should not be empty!',
-    'string.min': `Password should have at least 1 characters!`,
+    'string.min': `Password should have at least 8 characters!`,
   }),
   date: Joi.date().required(),
   dateOptional: Joi.date().optional(),
-  phoneNo: Joi.string().required(),
+  phoneNo: Joi.string().min(6).required(),
   stringOptional: Joi.string().trim().min(1).optional(),
   image: Joi.any()
     .meta({ swaggerType: 'file' })
