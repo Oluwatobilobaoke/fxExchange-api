@@ -11,9 +11,12 @@ const {
 const { signJWT } = require('../../utils/libs/token');
 const { hashPassword } = require('../../utils/libs/password');
 const { successResMsg, errorResMsg } = require('../../utils/libs/response');
+// const {
+//   registerEmailContent,
+// } = require('../../utils/libs/email-templates/user-register-email-template');
 const {
   registerEmailContent,
-} = require('../../utils/libs/email-templates/user-register-email-template');
+} = require('../../utils/libs/emailTemplates/user-registration-email-template');
 
 const logger = require('../../logger').Logger;
 
@@ -41,11 +44,18 @@ const register = async (req, res) => {
   
     // Wallet Data   
     const walletId = v4();
+    const walletId2 = v4();
   
     const walletInformation = {
         userId,
         walletId,
         currency: "BTC",
+    }
+
+    const walletInformation2 = {
+        userId,
+        walletId: walletId2,
+        currency: "ETH",
     }
   
     const data = {
@@ -63,21 +73,25 @@ const register = async (req, res) => {
       roleId: 'ROL-ELITE',
       userId,
     };
+
   
-    await createUser(userInformation);
+      await createUser(userInformation);
     await createUserWallet(walletInformation);
+    await createUserWallet(walletInformation2);
 
     const verificationUrl = `${URL}/auth/email/verify/?verification_token=${token}`;
 
     await sendEmail({
       email,
       subject: 'Email Verification',
-      message: await registerEmailContent(email, verificationUrl),
+      //message: await registerEmailContent(firstName, verificationUrl),
+      message: await registerEmailContent(firstName, verificationUrl),
     });
 
     const dataInfo = { message: 'Registration successful. Verification email sent!' };
     successResMsg(res, 201, dataInfo);
   } catch (error) {
+    console.log(error);
     logger.error(error);
     return errorResMsg(res, 500, 'it is us, not you. Please try again');
   }

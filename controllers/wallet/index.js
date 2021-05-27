@@ -23,6 +23,10 @@ const { successResMsg, errorResMsg } = require('../../utils/libs/response');
 const logger = require('../../logger').Logger;
 const { sendEmail } = require('../../utils/libs/send-email');
 
+const {
+  registerEmailContent,
+} = require('../../utils/libs/emailTemplates/user-deposit-email-template');
+
 const baseURL = `${process.env.FIXER_CONVERT_URL}?access_key=${process.env.FIXER_API_KEY}`
 
 
@@ -177,7 +181,14 @@ const deposit = async (req, res) => {
         email,
         subject: 'Deposit Notification',
        // message: await registerEmailContent(email, transaction.amount, transaction.coinAmount, transaction.addressSentTo, coinAmount, depositCharge.expires_at),
-        message: ` Hello ${email}, You initiated a sale of $${transaction.amount}, you are to pay ${transaction.coinAmount} ${currency} into the given Address ${transaction.addressSentTo}, \n The Sale expires ${depositCharge.expires_at} `,
+       message: await registerEmailContent(
+         email, 
+         transaction.amount, 
+         transaction.coinAmount, 
+         transaction.addressSentTo, 
+         depositCharge.expires_at
+         ),
+        // message: ` Hello ${email}, You initiated a sale of $${transaction.amount}, you are to pay ${transaction.coinAmount} ${currency} into the given Address ${transaction.addressSentTo}, \n The Sale expires ${depositCharge.expires_at} `,
       }),
       sendEmail({
         email: adminMail,

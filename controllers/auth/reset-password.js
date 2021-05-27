@@ -9,17 +9,17 @@ const { successResMsg, errorResMsg } = require('../../utils/libs/response');
 const { signJWT } = require('../../utils/libs/token');
 const {
   registerEmailContent,
-} = require('../../utils/libs/email-templates/user-register-email-template');
+} = require('../../utils/libs/emailTemplates/user-registration-email-template');
 
 const logger = require('../../logger').Logger;
 const {
   forgotPasswordEmailContent,
-} = require('../../utils/libs/email-templates/forgot-password-template');
+} = require('../../utils/libs/emailTemplates/forgot-password-template');
 
 const { sendEmail } = require('../../utils/libs/send-email');
 const {
   emailAlreadyRegistered,
-} = require('../../utils/libs/email-templates/user-already-verified-email-template');
+} = require('../../utils/libs/emailTemplates/user-already-verified-email-template');
 
 const URL =
   process.env.NODE_ENV === 'development'
@@ -164,7 +164,9 @@ const resendVerificationLink = async (req, res) => {
       await sendEmail({
         email,
         subject: 'Email Verification',
+        // message: await registerEmailContent(user.email, verificationUrl),
         message: await registerEmailContent(user.email, verificationUrl),
+
       });
 
       successResMsg(res, 201, { message: 'Verification email re-sent!' });

@@ -4,6 +4,7 @@ const {
   approveDeposit, approveWithdrawal, rejectTransaction,
   getTransaction,
   getAllTransactions,
+  depositListener,
 } = require('../../controllers/transaction');
 
 const { authorize } = require('../../Middleware/index');
@@ -16,6 +17,9 @@ const getId = (req, res, next) => {
 };
 
 const router = express.Router();
+
+// Deposit WebHook from Coinbase
+router.post('/sale-callback', depositListener);
 
 router.get(
   '/:transactionId',

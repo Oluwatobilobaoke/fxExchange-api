@@ -78,7 +78,7 @@ const approveDeposit = async (req, res) => {
     }
 }
 
-module.exports.depositListener = async (req, res) => {
+const depositListener = async (req, res) => {
     try {
   
       const {event} = req.body;
@@ -261,5 +261,6 @@ module.exports = {
     approveWithdrawal,
     rejectTransaction,
     getTransaction,
-    getAllTransactions
+    getAllTransactions,
+    depositListener
 }
