@@ -17,6 +17,8 @@ const {
     getUserTransactionById, 
     updateTransaction,
     getAllTransactionsFromSingleUser,
+    getDepositByCoinbaseCode,
+    updateDepositStatus,
 } = require('../dao/db/transaction');
 
 const {
@@ -44,7 +46,7 @@ const logger = require('../../logger').Logger;
 const sendAdminMail = async (admin, txnCode, amount) => {
     await sendEmail({
         email: admin, // TODO improve to send mail to to user also when transactions has been confirmed
-        subject: 'Deposit Confirmation',
+        subject: 'Deposit Confirmation or Failure',
         message: `${txnCode} deposit of $${amount} has been confirmed`,
       })
 }
@@ -142,6 +144,7 @@ const depositListener = async (req, res) => {
                   case 'charge:failed':
                     await updateDepositStatus(data.code, failedStatus);
                     console.log('Status has failed');
+                    await sendAdminMail(admin, transaction.txnCode, transaction.amount);
                     break;
                   case 'charge:delayed':
                     await updateDepositStatus(data.code, delayedStatus);
