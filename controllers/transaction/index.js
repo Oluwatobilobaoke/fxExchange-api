@@ -128,8 +128,7 @@ const depositListener = async (req, res) => {
                              
                 switch (data.type) {
                   case 'charge:confirmed':
-                    console.log('confirmed', data.type);
-                    console.log('confirmedAt', data.dateConfirmed); // TODO Remove all unnecessary console.log here
+                    console.log('confirmed', data.type); // TODO Remove all unnecessary console.log here
                     await updateDepositStatus(data.code, successStatus);
                     console.log('Status has been confirmed');
                     await sendAdminMail(admin, transaction.txnCode, transaction.amount);
