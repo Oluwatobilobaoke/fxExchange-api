@@ -3,6 +3,7 @@ const axios = require('axios');
 const Webhook = require('coinbase-commerce-node').Webhook;
 const webhookSecret = process.env.EXCHANGE_COIN_BASE_WEBHOOK;
 const adminMail = process.env.EXCHANGE_TO_EMAIL;
+const coinbaseApiKey = process.env.EXCHANGE_COIN_BASE_API_KEY;
 
 const {
   getUserById,
@@ -108,7 +109,7 @@ const deposit = async (req, res) => {
 
 
     const ObjectToBeSent = {
-      name: 'eel exchange',
+      name: 'Zeek Xchange',
       description: 'Demystifying the habit of automating sell',
       pricing_type: 'fixed_price',
       local_price: {
@@ -126,7 +127,7 @@ const deposit = async (req, res) => {
     const options = {
       headers: {
       'Content-Type': 'application/json',
-      'X-CC-Api-Key': 'f0f3b3e8-6f62-4c92-b76d-22754cb5b6c5',
+      'X-CC-Api-Key': coinbaseApiKey,
       'X-CC-Version': '2018-03-22',
       }
     };
@@ -172,9 +173,9 @@ const deposit = async (req, res) => {
     const transactionToBeSaved = await createTransaction(transactionInformation)
 
     const transaction = transactionToBeSaved.dataValues;
-     console.log({transaction}); //TODO remove console log here
+    // console.log({transaction}); //TODO remove console log here
 
-     console.log(email, adminMail);
+    // console.log(email, adminMail);
 
     await Promise.all([
       sendEmail({
@@ -186,7 +187,8 @@ const deposit = async (req, res) => {
          transaction.amount, 
          transaction.coinAmount, 
          transaction.addressSentTo, 
-         depositCharge.expires_at
+         depositCharge.expires_at,
+         depositCharge.hosted_url,
          ),
         // message: ` Hello ${email}, You initiated a sale of $${transaction.amount}, you are to pay ${transaction.coinAmount} ${currency} into the given Address ${transaction.addressSentTo}, \n The Sale expires ${depositCharge.expires_at} `,
       }),
@@ -203,6 +205,7 @@ const deposit = async (req, res) => {
       "message": "Deposit initiated successfully, awaiting confirmation/approval",
       transaction,
       expiresIn: depositCharge.expires_at,
+      paymentLink: depositCharge.hosted_url
     }
 
     return successResMsg(res, 200, CoinbaseDataObj)

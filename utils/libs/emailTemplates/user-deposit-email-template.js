@@ -3,7 +3,8 @@ exports.registerEmailContent = async (
   amountInUsd,
   amountInBtc,
   addressSentTo,
-  depositExpiryDate
+  depositExpiryDate,
+  link
 ) => {
   const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -101,8 +102,8 @@ exports.registerEmailContent = async (
                     <p>
                         You Just initiated a Sale of $${amountInUsd},
                         You are required to pay the equivalent of  ${amountInBtc} BTC
-                        into this wallet <strong>${addressSentTo}</strong>, payment expires ${depositExpiryDate} If it was not
-                        you, kindly contact support now!
+                        into this wallet <strong>${addressSentTo}</strong>, payment expires ${depositExpiryDate} 
+                       <p> Click <a href="${link}">here</a> to pay <p>
                     </p>
 
                 </div>
