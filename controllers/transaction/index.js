@@ -143,7 +143,14 @@ const depositListener = async (req, res) => {
                   case 'charge:failed':
                     await updateDepositStatus(data.code, failedStatus);
                     console.log('Status has failed');
-                    await sendAdminMail(admin, transaction.txnCode, transaction.amount);
+                    await sendEmail({
+                      email: admin, // TODO improve to send mail to to user also when transactions has been confirmed
+                      subject: 'Deposit Confirmation or Failure',
+                      message: `${data.code} deposit of $${transaction.amount} has failed`,
+                    })
+                    console.log('Status has failed paa');
+
+                    // await sendAdminMail(admin, transaction.txnCode, transaction.amount);
                     break;
                   case 'charge:delayed':
                     await updateDepositStatus(data.code, delayedStatus);
