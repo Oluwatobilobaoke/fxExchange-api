@@ -4,7 +4,7 @@ exports.registerEmailContent = async (firstName, url) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Registration . Zeek Switch</title>
+            <title>Registration . Zeek Xchange</title>
             <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
@@ -89,16 +89,16 @@ exports.registerEmailContent = async (firstName, url) => {
                     <h4>Dear ${firstName},</h4>
 
                     <p>
-                        Glad to have you join us. We hope you get to enjoy using Zeek Switch! To verify your email, kindly
+                        Glad to have you join us. We hope you get to enjoy using Zeek Xchange! To verify your email, kindly
                         click <a href='${url}'>here</a>
                     </p>
                 </div>
             </section>
             <footer>
                 <div class="container">
-                    <h1 class="footer-header">ZeekSwitch</h1>
+                    <h1 class="footer-header">Zeek Xchange</h1>
                     <div class="divider"></div>
-                    <p>Email: <a href="mailto:info@ZeekSwitch.com">info@ZeekSwitch.com</a></p>
+                    <p>Email: <a href="mailto:info@ZeekXchange.com">info@ZeekXchange.com</a></p>
                     <p>This email is an important notice of a status change that may affect your account. Please read the
                         information carefully as actions, once taken, may be permanent</p>
                 </div>
