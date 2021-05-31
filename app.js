@@ -3,8 +3,12 @@ const cors = require('cors');
 const logger = require('morgan');
 const dotenv = require('dotenv');
 const sequelize = require('sequelize');
+const path = require('path');
+
 
 dotenv.config();
+
+
 
 const db = require('./models');
 const { index } = require('./routes/home');
@@ -42,7 +46,10 @@ db.sequelize.sync().then(async () => {
 //connectDB();
 
 // ROUTES
-app.use('/', index)
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
+app.use('/v1', index)
 app.use('/v1/auth', authRouter);
 app.use('/v1/user', userRouter);
 app.use('/v1/wallet', walletRouter);
