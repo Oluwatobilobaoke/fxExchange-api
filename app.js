@@ -7,6 +7,7 @@ const sequelize = require('sequelize');
 dotenv.config();
 
 const db = require('./models');
+const { index } = require('./routes/home');
 const { authRouter } = require('./routes/auth/index');
 const { userRouter } = require('./routes/user/index');
 const { walletRouter } = require('./routes/wallet/index');
@@ -41,6 +42,7 @@ db.sequelize.sync().then(async () => {
 //connectDB();
 
 // ROUTES
+app.use('/', index)
 app.use('/v1/auth', authRouter);
 app.use('/v1/user', userRouter);
 app.use('/v1/wallet', walletRouter);
