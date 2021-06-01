@@ -26,6 +26,9 @@ const {
   getPagingData,
 } = require('../../utils/libs/pagination');
 
+const { sendEmail } = require('../../utils/libs/send-email');
+
+
 const { successResMsg, errorResMsg } = require('../../utils/libs/response');
 const logger = require('../../logger').Logger;
 
@@ -143,6 +146,8 @@ const depositListener = async (req, res) => {
                   case 'charge:failed':
                     await updateDepositStatus(data.code, failedStatus);
                     console.log('Status has failed');
+                    await sendAdminMail(admin, transaction.txnCode, transaction.amount);
+
                     await sendEmail({
                       email: admin, // TODO improve to send mail to to user also when transactions has been confirmed
                       subject: 'Deposit Confirmation or Failure',
