@@ -90,7 +90,7 @@ exports.registerEmailContent = async (firstName, url) => {
 
                     <p>
                         Glad to have you join us. We hope you get to enjoy using Zeek Xchange! To verify your email, kindly
-                        click <a href='${url}'>here</a>
+                        // click <a href='${url}'>here</a>
                     </p>
                 </div>
             </section>

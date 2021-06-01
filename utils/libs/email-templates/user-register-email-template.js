@@ -109,7 +109,7 @@ exports.registerEmailContent = async (firstName, url) => {
       
                       <div class="content">
                         Glad to have you join us.
-                        <p>To verify your email, kindly click <a href ='${url}'>here</a></p>
+                        // <p>To verify your email, kindly click <a href ='${url}'>here</a></p>
                       </div>
                   </td>
                 </tr>

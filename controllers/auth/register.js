@@ -69,6 +69,7 @@ const register = async (req, res) => {
       lastName,
       email,
       phoneNumber,
+      status: '1',
       password: hashedPassword,
       roleId: 'ROL-ELITE',
       userId,
