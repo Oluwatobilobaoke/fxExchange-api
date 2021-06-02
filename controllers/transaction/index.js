@@ -147,7 +147,7 @@ const depositListener = async (req, res) => {
                     await updateDepositStatus(data.code, successStatus);
                     console.log('Status has been confirmed');
 
-                    await promise.all([
+                    await Promise.all([
                       sendAdminConfMail(admin, transaction.txnCode, transaction.amount, userEmail),
                       sendEmail({
                         email: userEmail, 
@@ -167,8 +167,12 @@ const depositListener = async (req, res) => {
                     await updateDepositStatus(data.code, failedStatus);
                     console.log('Status has failed');
 
-                    await promise.all([
-                       sendAdminFailMail(admin, transaction.txnCode, transaction.amount),
+                    await Promise.all([
+                       sendAdminFailMail(
+                         admin, 
+                         transaction.txnCode, 
+                         transaction.amount
+                         ),
                        sendEmail({
                         email: userEmail, 
                         subject: 'Deposit Status Failed',
