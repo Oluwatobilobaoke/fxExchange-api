@@ -46,12 +46,20 @@ const logger = require('../../logger').Logger;
  const resolvedStatus = 'Resolved & Successfull';
  const createdStatus = 'Created & Processing';
 
-const sendAdminMail = async (admin, txnCode, amount) => {
+const sendAdminConfMail = async (admin, txnCode, amount, user) => {
     await sendEmail({
         email: admin, // TODO improve to send mail to to user also when transactions has been confirmed
-        subject: 'Deposit Confirmation or Failure',
-        message: `${txnCode} deposit of $${amount} has been confirmed`,
+        subject: 'Deposit Confirmed',
+        message: `${user} with transaction Id ${txnCode} deposit of $${amount} has been confirmed, Do Pay the User ASAP`,
       })
+}
+
+const sendAdminFailMail = async (admin, txnCode, amount, user) => {
+  await sendEmail({
+      email: admin, 
+      subject: 'Failed Deposit',
+      message: `${user} with transaction Id ${txnCode} deposit of $${amount} has failed to pay up`,
+    })
 }
 
 const approveDeposit = async (req, res) => {
@@ -124,6 +132,10 @@ const depositListener = async (req, res) => {
               if (!checkTransactionExist) return errorResMsg(res, 403, 'Transaction does not exist in our records');
 
               const transaction = checkTransactionExist.dataValues;
+              // const userId = transactions.userId;
+              const user = await getUserById(transactions.userId)
+              const userEmail = user.email;
+
           
               async function updateStatusFromCharge(CoinbaseDataObj) {
                 
@@ -134,7 +146,15 @@ const depositListener = async (req, res) => {
                     console.log('confirmed', data.type); // TODO Remove all unnecessary console.log here
                     await updateDepositStatus(data.code, successStatus);
                     console.log('Status has been confirmed');
-                    await sendAdminMail(admin, transaction.txnCode, transaction.amount);
+
+                    await promise.all([
+                      sendAdminConfMail(admin, transaction.txnCode, transaction.amount, userEmail),
+                      await sendEmail({
+                        email: userEmail, 
+                        subject: 'Deposit Confirmed',
+                        message: `Dear ${userEmail}, you initiated a deposit with transaction id: ${data.code}, amount: $${transaction.amount},\n Your Deposit has confirmed and you'll receive payment anytime soon.`,
+                      })
+                    ])
                     break;
                   case 'charge:pending':
                     await updateDepositStatus(data.code, pendingStatus);
@@ -146,13 +166,18 @@ const depositListener = async (req, res) => {
                   case 'charge:failed':
                     await updateDepositStatus(data.code, failedStatus);
                     console.log('Status has failed');
-                    await sendAdminMail(admin, transaction.txnCode, transaction.amount);
 
-                    await sendEmail({
-                      email: admin, // TODO improve to send mail to to user also when transactions has been confirmed
-                      subject: 'Deposit Confirmation or Failure',
-                      message: `${data.code} deposit of $${transaction.amount} has failed`,
-                    })
+                    await promise.all([
+                      await sendAdminFailMail(admin, transaction.txnCode, transaction.amount),
+                      await sendEmail({
+                        email: userEmail, 
+                        subject: 'Deposit Status Failed',
+                        message: `Dear ${userEmail}, you initiated a deposit with transaction id: ${data.code}, amount: $${transaction.amount}, \n The transaction has failed due to you didnt pay within the given timeframe`,
+                      })
+                    ])
+                    
+
+                    
                     console.log('Status has failed paa');
 
                     // await sendAdminMail(admin, transaction.txnCode, transaction.amount);
