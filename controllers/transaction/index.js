@@ -133,7 +133,7 @@ const depositListener = async (req, res) => {
 
               const transaction = checkTransactionExist.dataValues;
               // const userId = transactions.userId;
-              const user = await getUserById(transactions.userId)
+              const user = await getUserById(transaction.userId)
               const userEmail = user.email;
 
           
@@ -149,7 +149,7 @@ const depositListener = async (req, res) => {
 
                     await promise.all([
                       sendAdminConfMail(admin, transaction.txnCode, transaction.amount, userEmail),
-                      await sendEmail({
+                      sendEmail({
                         email: userEmail, 
                         subject: 'Deposit Confirmed',
                         message: `Dear ${userEmail}, you initiated a deposit with transaction id: ${data.code}, amount: $${transaction.amount},\n Your Deposit has confirmed and you'll receive payment anytime soon.`,
@@ -168,8 +168,8 @@ const depositListener = async (req, res) => {
                     console.log('Status has failed');
 
                     await promise.all([
-                      await sendAdminFailMail(admin, transaction.txnCode, transaction.amount),
-                      await sendEmail({
+                       sendAdminFailMail(admin, transaction.txnCode, transaction.amount),
+                       sendEmail({
                         email: userEmail, 
                         subject: 'Deposit Status Failed',
                         message: `Dear ${userEmail}, you initiated a deposit with transaction id: ${data.code}, amount: $${transaction.amount}, \n The transaction has failed due to you didnt pay within the given timeframe`,
