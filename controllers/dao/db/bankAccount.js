@@ -10,8 +10,8 @@ module.exports = {
     getUserBankAccountById: async (bankAccountId) => {
       return model.BankAccount.findOne({ where: { bankAccountId } });
     },
-    deleteBankAccountById: async (userId) => {
-      return model.BankAccount.destroy({ where: { userId } });
+    deleteBankAccountById: async (bankAccountId) => {
+      return model.BankAccount.destroy({ where: { bankAccountId } });
     },
     getUserBankAccounts: async (userId) => {
       return model.BankAccount.findAll({ where: { userId }, attributes: ['userId', 'bankAccountId', 'bankName', 'accountNumber', 'accountType', 'accountName', 'status'] });
