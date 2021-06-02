@@ -171,7 +171,8 @@ const depositListener = async (req, res) => {
                        sendAdminFailMail(
                          admin, 
                          transaction.txnCode, 
-                         transaction.amount
+                         transaction.amount,
+                         userEmail
                          ),
                        sendEmail({
                         email: userEmail, 
